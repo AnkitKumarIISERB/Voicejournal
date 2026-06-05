@@ -8,6 +8,7 @@
     <img src="https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi" />
     <img src="https://img.shields.io/badge/Celery-37814A?style=for-the-badge&logo=celery&logoColor=white" />
     <img src="https://img.shields.io/badge/Llama_3-0466C8?style=for-the-badge&logo=meta&logoColor=white" />
+    <img src="https://github.com/AnkitKumarIISERB/Voicejournal/actions/workflows/ci.yml/badge.svg" alt="CI" />
   </p>
 
   <h3>
@@ -24,6 +25,12 @@
 </div>
 
 <br/>
+
+## 🎥 Video Walkthrough
+
+> **[Loom Video Link Here - Replace me!]** 
+> 
+> Watch a full 2-minute demo of the application capturing live audio, generating the Llama-3 analysis, and talking back to me using the Neural Voice agent.
 
 ---
 
@@ -75,6 +82,48 @@ Designed with flexibility in mind. While it currently uses **Groq** for blazing-
 Traditional journaling is highly beneficial for mental health, but typing out your thoughts when you are overwhelmed, anxious, or exhausted can feel like a chore. **Voice Journal AI** removes the friction of typing, allowing users to simply speak their mind.
 
 By capturing the raw audio, the platform not only transcribes the text, but deeply analyzes the semantic meaning, sarcasm, and tone to build a **longitudinal emotional profile**. This helps users visualize their mental state over time, identify triggers, and reflect on their growth through the help of an empathetic, intelligent AI companion.
+
+## 📡 Core API & Metrics Endpoints
+
+The FastAPI backend is fully documented via OpenAPI/Swagger. Once running, you can view the interactive documentation at `http://localhost:8000/docs`.
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET`  | `/metrics`| Prometheus-compatible metrics endpoint (requests, latency) | ❌ |
+| `POST` | `/api/v1/auth/register` | Register a new user | ❌ |
+| `POST` | `/api/v1/auth/login` | Authenticate and receive JWT | ❌ |
+| `POST` | `/api/v1/journals/upload` | Upload audio and dispatch Celery analysis task | ✅ |
+| `GET` | `/api/v1/journals/` | Fetch all journal entries for the current user | ✅ |
+| `GET` | `/api/v1/journals/{id}/audio`| Stream decrypted audio chunks to the browser | ✅ |
+| `GET` | `/api/v1/journals/trends` | Aggregate 30-day emotion/valence data for charting | ✅ |
+| `POST` | `/api/v1/journals/chat` | Send a message to the AI Companion | ✅ |
+
+---
+
+## 📂 Project Structure
+
+```text
+voicejournal/
+├── docker-compose.yml       # Full-stack orchestrator
+├── README.md                # You are here
+├── .github/workflows/       # CI/CD GitHub Actions
+├── backend/                 # Python FastAPI & Celery App
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   ├── app/
+│   │   ├── api/             # REST endpoint routers
+│   │   ├── core/            # Config, Limiter, Middleware
+│   │   ├── db/              # SQLAlchemy models & Alembic
+│   │   └── services/        # Audio processing & Groq LLM logic
+│   └── tests/               # Pytest API test suite
+└── frontend/                # React & Vite App
+    ├── package.json
+    ├── tailwind.config.js
+    └── src/
+        ├── App.tsx          # Main router
+        ├── components/      # UI, JournalChat, Glassmorphic cards
+        └── pages/           # Dashboard, Login, Register
+```
 
 ---
 

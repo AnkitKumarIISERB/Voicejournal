@@ -19,3 +19,4 @@ structlog==24.1.0
 slowapi==0.1.9
 groq
 edge-tts
+prometheus-fastapi-instrumentator
