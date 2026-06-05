@@ -105,8 +105,9 @@ export default function AudioRecorder({ onUploadSuccess }: AudioRecorderProps) {
       };
 
       mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        await uploadAudio(audioBlob);
+        const mimeType = mediaRecorderRef.current?.mimeType || 'audio/webm';
+        const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
+        await uploadAudio(audioBlob, mimeType);
         
         // Cleanup stream tracks
         stream.getTracks().forEach(track => track.stop());
@@ -141,12 +142,13 @@ export default function AudioRecorder({ onUploadSuccess }: AudioRecorderProps) {
     setIsRecording(false);
   };
 
-  const uploadAudio = async (blob: Blob) => {
+  const uploadAudio = async (blob: Blob, mimeType: string) => {
     setIsUploading(true);
     try {
       const formData = new FormData();
-      // Fastapi expects standard upload file name
-      formData.append('file', blob, 'journal.webm');
+      // Fastapi expects standard upload file name, dynamically set extension based on browser support
+      const ext = mimeType.includes('mp4') ? 'mp4' : 'webm';
+      formData.append('file', blob, `journal.${ext}`);
 
       const response = await apiClient.post('/journals/upload', formData, {
         headers: {
