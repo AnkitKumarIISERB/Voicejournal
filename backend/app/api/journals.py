@@ -426,12 +426,15 @@ Do NOT output anything other than the raw JSON object. Keep it incredibly empath
         
         if voice_id in ["hi-IN-SwaraNeural", "hi-IN-MadhurNeural"]:
             import json
+            import re
             try:
-                # Groq might wrap in markdown ```json
-                clean_json = answer.replace("```json", "").replace("```", "").strip()
-                data = json.loads(clean_json)
-                answer = data.get("answer", answer)
-                tts_text = data.get("tts_text", answer)
+                # Groq might append conversational text before/after the JSON
+                match = re.search(r'\{.*\}', answer, re.DOTALL)
+                if match:
+                    clean_json = match.group(0)
+                    data = json.loads(clean_json)
+                    answer = data.get("answer", answer)
+                    tts_text = data.get("tts_text", answer)
             except Exception as e:
                 print(f"Failed to parse JSON for Hinglish: {e}")
     except Exception as e:
@@ -556,9 +559,10 @@ def get_entry_audio(
     except FileNotFoundError:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Audio file not found on server")
 
-    # Determine content type based on extension
+    # Determine content type based on extension (ignore .encrypted)
     import os
-    ext = os.path.splitext(entry.audio_s3_key)[1].lower()
+    clean_key = entry.audio_s3_key.replace('.encrypted', '')
+    ext = os.path.splitext(clean_key)[1].lower()
     content_type = "audio/webm" if ext == ".webm" else f"audio/{ext.strip('.')}"
 
     return StreamingResponse(
