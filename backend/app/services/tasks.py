@@ -184,7 +184,7 @@ def process_journal(self, entry_id: int):
                 is_alert = True
         
         # Immediate alert for severe flat affect combined with negative mood
-        if entry.pitch_variance < 50.0 and combined_valence < -0.2:
+        if entry.pitch_variance is not None and entry.pitch_variance < 50.0 and combined_valence < -0.2:
             is_alert = True
 
         if is_alert:
