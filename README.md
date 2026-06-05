@@ -1,19 +1,27 @@
 <div align="center">
   <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/mic.svg" width="80" height="80" alt="Voice Journal Logo"/>
   <h1>Voice Journal AI</h1>
-  <p><strong>A beautifully crafted, AI-powered voice journaling platform that analyzes your emotions, tracks your mental well-being, and talks back to you.</strong></p>
+  <p><strong>A beautifully crafted, multimodal AI voice journaling platform that analyzes your acoustic emotions, tracks mental well-being, and talks back to you.</strong></p>
   
   <p>
     <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" />
     <img src="https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi" />
     <img src="https://img.shields.io/badge/Celery-37814A?style=for-the-badge&logo=celery&logoColor=white" />
     <img src="https://img.shields.io/badge/Llama_3-0466C8?style=for-the-badge&logo=meta&logoColor=white" />
-    <img src="https://github.com/AnkitKumarIISERB/Voicejournal/actions/workflows/ci.yml/badge.svg" alt="CI" />
+    <img src="https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" />
+    <a href="https://github.com/AnkitKumarIISERB/Voicejournal/actions/workflows/ci.yml"><img src="https://github.com/AnkitKumarIISERB/Voicejournal/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
   </p>
 
   <h3>
     <a href="https://voicejournal-orggxnjnn-ankityadav-s-projects.vercel.app" target="_blank">🌐 Try the Live Demo Here</a>
   </h3>
+  
+  <table>
+    <tr>
+      <td><strong>Recruiter Demo Account</strong></td>
+      <td><code>Email: demo@voicejournal.ai</code><br/><code>Password: password123</code></td>
+    </tr>
+  </table>
 </div>
 
 <br/>
@@ -30,73 +38,133 @@
 
 > **[Loom Video Link Here - Replace me!]** 
 > 
-> Watch a full 2-minute demo of the application capturing live audio, generating the Llama-3 analysis, and talking back to me using the Neural Voice agent.
-
----
-
-## ✨ Features
-
-- 🎙️ **Voice-First Journaling**: Seamlessly record audio journals directly in your browser. Audio is automatically transcribed using Whisper / Groq API.
-- 🧠 **Deep Sentiment Analysis**: Analyzes the semantic context, sarcasm, and tone of your transcripts using **Llama-3.1-8b** to accurately predict your emotional state (Valence & Arousal).
-- 📈 **Dynamic Mood Arc**: Watch your mental well-being unfold over time with an interactive, responsive Recharts area graph.
-- 🤖 **Empathetic AI Companion**: Chat with a highly personalized AI therapist/friend about your past journal entries.
-- 🗣️ **Neural Voice Output**: Features Microsoft Edge Neural TTS for lifelike AI voice responses (Available in English and Hindi!).
-- 💎 **Premium Glassmorphic UI**: A stunning, animated interface built with TailwindCSS, pure-CSS animated mesh gradients, and Framer Motion.
-
-
-## 🔒 Security & Privacy By Design
-
-- **Audio Encryption at Rest**: All uploaded audio files are encrypted using **AES-256** (`cryptography.fernet`) before being saved to disk or S3.
-- **Rate Limiting**: API endpoints are strictly rate-limited using `slowapi` to prevent abuse and brute-force attacks.
-- **Secure Authentication**: Stateless, expiring JWT tokens are used for authentication with hashed passwords (`bcrypt`).
-
-## 📊 Monitoring & Reliability
-
-- **Unit Tested**: Includes a robust suite of `pytest` unit tests validating all core API functionality and authentication mechanisms.
-- **Structured Logging**: Employs `structlog` for machine-readable JSON logs across all incoming API requests.
-- **Health Checks**: Features a dedicated `/health` endpoint for continuous uptime monitoring by orchestrators.
-
-## 🔀 Cloud & Local Fallbacks
-Designed with flexibility in mind. While it currently uses **Groq** for blazing-fast inference and **Microsoft Edge** for TTS, the architecture supports hot-swapping:
-- **Local LLM Fallback**: Easily swap Groq for [Ollama](https://ollama.ai/) to run Llama-3 entirely on-premise.
-- **Local TTS Fallback**: Swap the Edge TTS engine for [Suno Bark](https://github.com/suno-ai/bark) for 100% offline neural voice generation.
-
-## 🛠️ Tech Stack
-
-**Frontend (Vercel)**
-- React (Vite) + TypeScript
-- TailwindCSS (Styling & Glassmorphism)
-- Framer Motion (Page transitions & micro-animations)
-- Recharts (Data visualization)
-
-**Backend (Render)**
-- Python + FastAPI (REST API)
-- Celery + Redis (Asynchronous background processing)
-- PostgreSQL + SQLAlchemy (Database & ORM)
-- Groq API (Blazing fast LLM inference)
+> Watch a full 2-minute demo of the application capturing live audio, generating the 60/40 multimodal fusion analysis, and talking back using the Neural Voice agent.
 
 ---
 
 ## 📖 The Motivation: Why Voice Journal?
 
-Traditional journaling is highly beneficial for mental health, but typing out your thoughts when you are overwhelmed, anxious, or exhausted can feel like a chore. **Voice Journal AI** removes the friction of typing, allowing users to simply speak their mind.
+Traditional journaling is highly beneficial for mental health, but typing out thoughts when overwhelmed or exhausted is a massive friction point. **Voice Journal AI** removes this barrier by allowing users to simply speak their mind. 
 
-By capturing the raw audio, the platform not only transcribes the text, but deeply analyzes the semantic meaning, sarcasm, and tone to build a **longitudinal emotional profile**. This helps users visualize their mental state over time, identify triggers, and reflect on their growth through the help of an empathetic, intelligent AI companion.
+By capturing raw audio, the platform doesn't just transcribe text—it performs a **multimodal analysis** of both *what* you said (semantics) and *how* you said it (acoustic emotion) to build a longitudinal emotional profile.
+
+---
+
+## 🧠 ML Pipeline & Multimodal Fusion
+
+Unlike simple wrapper apps, this project implements a **60/40 Multimodal Fusion Strategy** to accurately gauge human emotion:
+
+1. **Acoustic Emotion (40% Weight):** 
+   - The raw audio is processed using a **WavLM** model (fine-tuned on the RAVDESS dataset) via PyTorch.
+   - It extracts deep acoustic features (pitch, jitter, shimmer) to determine if the speaker's actual voice sounds distressed, exhausted, or joyful.
+2. **Semantic Sentiment (60% Weight):**
+   - The audio is transcribed via **Whisper**, and the text is passed to **Llama-3.1-8b** via Groq.
+   - Llama-3 performs deep semantic context analysis (detecting sarcasm, passive-aggressiveness, or explicit statements).
+3. **Fusion & Clinical Anomaly Detection:**
+   - The two scores are fused into a final Continuous Valence Score (-1.0 to +1.0).
+   - A background chron-job scans for **Crisis Anomalies** (e.g., a sudden valence drop of >0.5, or 3+ sustained negative days) and triggers ethical crisis helpline alerts.
+
+---
+
+## ✨ Clever Engineering Tricks
+
+- **The Hinglish TTS Trick:** To create an empathetic AI therapist without massive cloud bills, the chatbot uses the undocumented **Microsoft Edge Neural TTS engine**. It dynamically swaps between English and Hinglish neural voices depending on the user's input language, achieving ultra-lifelike, zero-cost voice synthesis.
+- **Whisper Translate Mode:** Instead of building a complex multi-language router, the Whisper API is invoked in `translate` mode, automatically normalizing regional dialects and languages into English text before feeding it to Llama-3, saving precious token context limits.
+
+---
+
+## 🏗️ System Architecture & Data Flow
+
+Voice Journal AI is designed as a decoupled, scalable, event-driven system.
+
+1. **Audio Ingestion**: Client records audio via MediaRecorder API and POSTs `multipart/form-data`.
+2. **AES-256 Storage**: Backend immediately encrypts audio locally (designed to swap easily with AWS S3/R2 via a repository pattern).
+3. **Async Task Routing**: A task is published to **Redis Pub/Sub**, and the FastAPI server immediately returns a `202 Accepted` to unblock the client.
+4. **Celery Worker Pipeline**: The worker processes the WavLM PyTorch acoustic analysis and Groq Whisper/Llama-3 text analysis in parallel.
+5. **Real-Time Push**: Once fusion is complete, the Celery worker notifies the frontend over a live **WebSocket connection**, causing the Recharts UI to dynamically update.
+
+```mermaid
+graph TD
+    subgraph Client [React Frontend]
+        UI[Glassmorphic UI]
+        WS_Client[WebSocket Listener]
+    end
+
+    subgraph API [FastAPI Backend]
+        Router[REST Router]
+        WS_Server[WebSocket Manager]
+        Auth[JWT Auth]
+        Risk[Clinical Anomaly Detector]
+    end
+
+    subgraph Data [Data Persistence]
+        DB[(PostgreSQL)]
+        Storage[(AES-256 Local / R2)]
+    end
+
+    subgraph Async [Background Processing]
+        Redis((Redis Pub/Sub))
+        Celery[Celery Worker]
+        WavLM[PyTorch WavLM]
+        Groq[Groq: Whisper + Llama 3]
+        TTS[Edge Neural TTS]
+    end
+
+    UI -- "Audio Upload" --> Router
+    Router -- "Encrypt & Save" --> Storage
+    Router -- "Dispatch Task" --> Redis
+    Redis -- "Consume" --> Celery
+    
+    Celery <--> WavLM
+    Celery <--> Groq
+    Celery <--> TTS
+    
+    Celery -- "Calculate Fusion" --> DB
+    Celery -- "Triggers" --> Risk
+    Celery -- "Notify Completion" --> WS_Server
+    WS_Server -- "Real-Time Push" --> WS_Client
+```
+
+---
+
+## ⚖️ Technical Decisions (The "Why")
+
+- **Why Celery + Redis instead of FastAPI `BackgroundTasks`?**
+  FastAPI's built-in background tasks run in the same event loop as the web server. Since WavLM PyTorch inference is heavily CPU-bound, it would cause event loop blocking, dropping incoming HTTP requests. Decoupling via Celery ensures web server throughput remains high.
+- **Why Asyncpg & SQLAlchemy 2.0?**
+  To maximize concurrency for WebSocket connections and database queries, the app uses `asyncpg` drivers with SQLAlchemy's `AsyncSession`, allowing thousands of concurrent users without thread starvation.
+- **Why Local Storage for Dev instead of S3?**
+  To make this repo easily runnable by anyone, I implemented a Local AES-256 storage provider. The storage class is written to an interface, meaning swapping to AWS S3 or Cloudflare R2 in production simply requires changing the `STORAGE_BACKEND` env variable.
+
+---
+
+## ⚠️ Honest Known Limitations
+
+No architecture is perfect. If I were scaling this to 100,000 users, I would address the following:
+1. **Render Cold Starts**: The backend is hosted on Render's free tier. If the API hasn't been hit in 15 minutes, the first audio upload takes ~50 seconds to process while the container spins up. 
+2. **Free-Tier RAM Constraints**: PyTorch WavLM models require ~2GB of RAM. Because Render's free tier provides 512MB, the WavLM acoustic analysis is dynamically bypassed in the live deployment (`RENDER_FREE_TIER=true`) to prevent Out-Of-Memory (OOM) crashes. It runs beautifully on local Docker!
+3. **WebSocket Scaling**: The current WebSocket manager stores active connections in-memory on the FastAPI server. If deployed across a multi-node Kubernetes cluster, this would fail. We would need a Redis Pub/Sub backplane to route WebSocket messages across horizontal pods.
+
+---
+
+## 🔒 Security & Privacy By Design
+
+- **Audio Encryption at Rest**: All uploaded audio files are encrypted using **AES-256** (`cryptography.fernet`) before being saved to disk.
+- **Rate Limiting**: API endpoints are strictly rate-limited using `slowapi` to prevent abuse.
+- **Secure Authentication**: Stateless, expiring JWT tokens are used for authentication with hashed passwords (`bcrypt`).
+
+---
 
 ## 📡 Core API & Metrics Endpoints
 
-The FastAPI backend is fully deployed to **Render**. You can view the live interactive OpenAPI/Swagger documentation at `https://voicejournal-k36q.onrender.com/docs` (or `http://localhost:8000/docs` if running locally).
+The FastAPI backend is fully deployed to **Render**. View the live interactive OpenAPI/Swagger documentation at `https://voicejournal-k36q.onrender.com/docs`.
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
 | `GET`  | `/metrics`| Prometheus-compatible metrics endpoint (requests, latency) | ❌ |
-| `POST` | `/api/v1/auth/register` | Register a new user | ❌ |
-| `POST` | `/api/v1/auth/login` | Authenticate and receive JWT | ❌ |
 | `POST` | `/api/v1/journals/upload` | Upload audio and dispatch Celery analysis task | ✅ |
-| `GET` | `/api/v1/journals/` | Fetch all journal entries for the current user | ✅ |
-| `GET` | `/api/v1/journals/{id}/audio`| Stream decrypted audio chunks to the browser | ✅ |
-| `GET` | `/api/v1/journals/trends` | Aggregate 30-day emotion/valence data for charting | ✅ |
-| `POST` | `/api/v1/journals/chat` | Send a message to the AI Companion | ✅ |
+| `WS`   | `/ws/{token}` | WebSocket endpoint for live task completion events | ✅ |
+| `GET`  | `/api/v1/clinical/entries` | Fetch journal entries with Clinical DSP Biomarkers | ✅ |
 
 ---
 
@@ -109,16 +177,13 @@ voicejournal/
 ├── .github/workflows/       # CI/CD GitHub Actions
 ├── backend/                 # Python FastAPI & Celery App
 │   ├── Dockerfile
-│   ├── requirements.txt
 │   ├── app/
-│   │   ├── api/             # REST endpoint routers
+│   │   ├── api/             # REST endpoint routers & WebSockets
 │   │   ├── core/            # Config, Limiter, Middleware
 │   │   ├── db/              # SQLAlchemy models & Alembic
-│   │   └── services/        # Audio processing & Groq LLM logic
+│   │   └── services/        # WavLM, Llama-3, TTS, and DSP Logic
 │   └── tests/               # Pytest API test suite
 └── frontend/                # React & Vite App
-    ├── package.json
-    ├── tailwind.config.js
     └── src/
         ├── App.tsx          # Main router
         ├── components/      # UI, JournalChat, Glassmorphic cards
@@ -127,90 +192,30 @@ voicejournal/
 
 ---
 
-## 🏗️ System Architecture & Data Flow
+## 🚀 Local Development Setup
 
-Voice Journal AI is designed as a decoupled, scalable, event-driven system.
-
-1. **Audio Ingestion**: The user records an audio journal in the browser using the MediaRecorder API. The audio is sent as a `multipart/form-data` payload to the FastAPI backend.
-2. **Immediate Storage**: The backend immediately encrypts the raw audio via AES-256 and saves it to secure storage.
-3. **Event Dispatch**: A task is dispatched to the **Celery / Redis** message broker to process the audio asynchronously, allowing the API to return an immediate 202 response to the user.
-4. **AI Inference Pipeline**:
-   - The Celery worker picks up the task and runs it through the **Whisper API** for highly accurate Speech-to-Text transcription.
-   - The generated transcript is then fed into **Llama-3.1-8b** via the Groq API.
-   - Llama-3 performs deep semantic analysis, detecting nuances like sarcasm and exhaustion, to output an emotional classification (e.g. "Happy", "Anxious", "Neutral") and a continuous **Valence Score** (-1.0 to +1.0).
-5. **Real-time Updates**: The frontend polls for completion and dynamically renders the new journal entry on the dashboard's Recharts trend graph.
-
-```mermaid
-graph LR
-    subgraph Frontend [React Frontend]
-        UI[Glassmorphic UI]
-        AR[Audio Recorder]
-        Bot[Chatbot UI]
-    end
-
-    subgraph Backend [FastAPI Backend]
-        API[API Router]
-        Auth[JWT Auth]
-        DB[(PostgreSQL)]
-    end
-
-    subgraph Worker [Celery Background Worker]
-        Task[Audio Processing Pipeline]
-        Groq[Groq API: Whisper + Llama 3]
-        TTS[Edge TTS Engine]
-    end
-
-    UI <--> API
-    AR -- "Uploads Audio" --> API
-    Bot -- "Queries History" --> API
-    API <--> DB
-    API -- "Dispatches" --> Task
-    Task <--> Groq
-    API <--> TTS
+### 1. Clone the repository
+```bash
+git clone https://github.com/AnkitKumarIISERB/Voicejournal.git
+cd Voicejournal
 ```
 
 ### 2. Environment Variables
-Create the necessary environment variable files.
 ```bash
-# In the backend directory
 cp backend/.env.example backend/.env
 
-# In the frontend directory (Connects to Local Backend)
-echo "VITE_API_URL=http://localhost:8000/api/v1" > frontend/.env
-
-# OR, to connect to the Live Production Backend:
+# Connect frontend to Live Production Backend:
 echo "VITE_API_URL=https://voicejournal-k36q.onrender.com/api/v1" > frontend/.env
 ```
-*(Make sure to add your `GROQ_API_KEY` to the backend `.env` file!)*
+*(Add your `GROQ_API_KEY` to the backend `.env` file to enable AI features!)*
 
 ### 3. Run with Docker Compose (Recommended)
-You can spin up the entire full-stack application (Postgres, Redis, FastAPI Backend, Celery Worker, and Vite Frontend) using Docker:
-
+Spin up the entire full-stack application (Postgres, Redis, FastAPI Backend, Celery Worker, and Vite Frontend) locally:
 ```bash
 docker compose up --build
 ```
 - Frontend will be available at: `http://localhost:5173`
 - Backend API Docs available at: `http://localhost:8000/docs`
 
-### 4. Running Unit Tests
-To run the automated test suite locally:
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-PYTHONPATH=. pytest tests/test_api.py
-```
-
-## 🔐 Environment Variables
-
-You will need to set up the following keys in your backend `.env`:
-- `DATABASE_URL` (Postgres Connection String)
-- `SECRET_KEY` (For JWT token signing)
-- `GROQ_API_KEY` (For Llama-3 and Whisper inference)
-
-## 🤝 Contributing
-Contributions, issues, and feature requests are welcome! Feel free to check the issues page.
-
-## 📝 License
-This project is [MIT](https://choosealicense.com/licenses/mit/) licensed.
+---
+*Developed with ❤️ by Ankit*
