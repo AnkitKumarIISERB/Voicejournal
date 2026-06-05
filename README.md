@@ -85,7 +85,7 @@ By capturing the raw audio, the platform not only transcribes the text, but deep
 
 ## 📡 Core API & Metrics Endpoints
 
-The FastAPI backend is fully documented via OpenAPI/Swagger. Once running, you can view the interactive documentation at `http://localhost:8000/docs`.
+The FastAPI backend is fully deployed to **Render**. You can view the live interactive OpenAPI/Swagger documentation at `https://voicejournal-k36q.onrender.com/docs` (or `http://localhost:8000/docs` if running locally).
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
@@ -175,8 +175,11 @@ Create the necessary environment variable files.
 # In the backend directory
 cp backend/.env.example backend/.env
 
-# In the frontend directory
+# In the frontend directory (Connects to Local Backend)
 echo "VITE_API_URL=http://localhost:8000/api/v1" > frontend/.env
+
+# OR, to connect to the Live Production Backend:
+echo "VITE_API_URL=https://voicejournal-k36q.onrender.com/api/v1" > frontend/.env
 ```
 *(Make sure to add your `GROQ_API_KEY` to the backend `.env` file!)*
 
