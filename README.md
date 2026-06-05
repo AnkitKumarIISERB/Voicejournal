@@ -13,7 +13,7 @@
   </p>
 
   <h3>
-    <a href="https://voicejournal-orggxnjnn-ankityadav-s-projects.vercel.app" target="_blank">🌐 Try the Live Demo Here</a>
+    <a href="https://voicejournal-app.vercel.app" target="_blank">🌐 Try the Live Demo Here</a>
   </h3>
   
   <table>
