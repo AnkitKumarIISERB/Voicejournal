@@ -72,6 +72,7 @@ def process_journal(self, entry_id: int):
                 )
                 transcript = transcription.text.strip()
                 entry.transcript = transcript
+                db.commit()  # Save transcript immediately so UI updates
                 print(f"[Task] Groq Transcript: {transcript[:100]}...")
         else:
             print("[Task] Whisper not loaded, skipping transcription")
