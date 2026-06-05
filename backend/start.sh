@@ -21,6 +21,6 @@ alembic upgrade head
 echo "Starting Celery worker..."
 celery -A app.services.celery_app worker --loglevel=info --concurrency=1 &
 
-# Start Uvicorn in the foreground
-echo "Starting FastAPI server..."
-exec uvicorn app.main:app --host 0.0.0.0 --port 8000
+# Start Uvicorn in the foreground (Render uses the PORT environment variable)
+echo "Starting FastAPI server on port ${PORT:-10000}..."
+exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-10000}

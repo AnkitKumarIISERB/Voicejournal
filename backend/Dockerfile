@@ -26,6 +26,7 @@ COPY ml/ ./ml/
 
 # Ensure python can find both the `app` folder (inside backend) and the `ml` folder (in root)
 ENV PYTHONPATH="/app/backend:/app"
+ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app/backend
 
