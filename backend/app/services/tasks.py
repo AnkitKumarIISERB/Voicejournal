@@ -148,11 +148,18 @@ def process_journal(self, entry_id: int):
         combined_valence = max(-1.0, min(1.0, combined_valence))
 
         # Step 5.5: Deterministic Acoustic Feature Extraction (Clinical Explanability)
-        print(f"[Task] Extracting clinical DSP features...")
-        dsp_features = extract_acoustic_features(tmp_path)
-        entry.speech_rate = dsp_features["speech_rate"]
-        entry.pitch_variance = dsp_features["pitch_variance"]
-        entry.energy_variance = dsp_features["energy_variance"]
+        if not is_free_tier:
+            print(f"[Task] Extracting clinical DSP features...")
+            try:
+                dsp_features = extract_acoustic_features(tmp_path)
+                # Add them to the database
+                entry.pitch_variance = dsp_features.get("pitch_variance")
+                entry.energy_variance = dsp_features.get("energy_variance")
+                entry.speech_rate = dsp_features.get("speech_rate")
+            except Exception as e:
+                print(f"[Task] DSP Extraction failed: {e}")
+        else:
+            print("[Task] Free Tier: Skipping heavy DSP extraction to save RAM")
 
         # Save to database
         entry.valence_score = round(combined_valence, 4)
