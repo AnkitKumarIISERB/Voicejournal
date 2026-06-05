@@ -11,6 +11,8 @@ Results are written directly to the database.
 
 import os
 import tempfile
+import json
+from groq import Groq
 from app.services.celery_app import celery_app, get_whisper, get_wavlm, get_text_analyzer
 from app.services.storage import load_audio
 from app.db.session import SessionLocal
@@ -49,15 +51,28 @@ def process_journal(self, entry_id: int):
         tmp.close()
         tmp_path = tmp.name
 
-        # Step 2: Transcribe with Whisper
+        # Step 2: Transcribe with Whisper (or Groq if Free Tier)
         whisper_model = get_whisper()
         transcript = ""
+        is_free_tier = os.environ.get("RENDER_FREE_TIER", "false").lower() == "true"
+        
         if whisper_model:
-            print(f"[Task] Transcribing entry {entry_id}...")
+            print(f"[Task] Transcribing entry {entry_id} locally with Whisper...")
             result = whisper_model.transcribe(tmp_path)
             transcript = result["text"].strip()
             entry.transcript = transcript
             print(f"[Task] Transcript: {transcript[:100]}...")
+        elif is_free_tier:
+            print(f"[Task] Free Tier: Transcribing entry {entry_id} via Groq API...")
+            client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+            with open(tmp_path, "rb") as file:
+                transcription = client.audio.transcriptions.create(
+                    file=(tmp_path, file.read()),
+                    model="whisper-large-v3",
+                )
+                transcript = transcription.text.strip()
+                entry.transcript = transcript
+                print(f"[Task] Groq Transcript: {transcript[:100]}...")
         else:
             print("[Task] Whisper not loaded, skipping transcription")
 
@@ -77,7 +92,7 @@ def process_journal(self, entry_id: int):
         else:
             print("[Task] WavLM not loaded, skipping acoustic analysis")
 
-        # Step 4: Text sentiment
+        # Step 4: Text sentiment (or Groq if Free Tier)
         text_valence = 0.0
         text_emotion = "neutral"
         text_confidence = 0.0
@@ -90,6 +105,25 @@ def process_journal(self, entry_id: int):
             text_emotion = text_result["dominant_emotion"]
             text_confidence = text_result["confidence"]
             print(f"[Task] Text: {text_emotion} (valence={text_valence}, conf={text_confidence})")
+        elif is_free_tier and transcript:
+            print(f"[Task] Free Tier: Running text sentiment analysis via Groq Llama 3...")
+            try:
+                client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+                response = client.chat.completions.create(
+                    messages=[
+                        {"role": "system", "content": "You are a sentiment analyzer. Reply with a JSON object containing two keys: 'emotion' (one of: happy, sad, fearful, angry, neutral) and 'valence' (a float from -1.0 to 1.0)."},
+                        {"role": "user", "content": transcript}
+                    ],
+                    model="llama3-8b-8192",
+                    response_format={"type": "json_object"}
+                )
+                res_dict = json.loads(response.choices[0].message.content)
+                text_emotion = res_dict.get("emotion", "neutral")
+                text_valence = float(res_dict.get("valence", 0.0))
+                text_confidence = 0.8  # Default confidence for LLM
+                print(f"[Task] Groq Text Emotion: {text_emotion} (valence={text_valence})")
+            except Exception as e:
+                print(f"[Task] Groq text sentiment failed: {e}")
 
         # Step 5: Combine scores (60% acoustic, 40% text)
         if wavlm_model and text_analyzer and transcript:
@@ -102,7 +136,7 @@ def process_journal(self, entry_id: int):
         elif wavlm_model:
             combined_valence = acoustic_valence
             combined_emotion = acoustic_emotion
-        elif text_analyzer and transcript:
+        elif (text_analyzer or is_free_tier) and transcript:
             combined_valence = text_valence
             combined_emotion = text_emotion
         else:

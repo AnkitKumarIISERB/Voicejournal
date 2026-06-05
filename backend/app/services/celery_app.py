@@ -68,6 +68,12 @@ def preload_models(**kwargs):
     """
     global _whisper_model, _wavlm_model, _text_analyzer
 
+    is_free_tier = os.environ.get("RENDER_FREE_TIER", "false").lower() == "true"
+    
+    if is_free_tier:
+        print("[Worker Init] RENDER_FREE_TIER is true. Skipping heavy PyTorch models (Whisper/WavLM/RoBERTa) to save RAM.")
+        return
+
     import whisper
 
     print("[Worker Init] Loading Whisper model...")
