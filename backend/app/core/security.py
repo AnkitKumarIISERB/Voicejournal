@@ -83,6 +83,14 @@ def get_current_user(
         def read_me(user: User = Depends(get_current_user)):
             return user
     """
+    payload = decode_token(token)
+    user_id = payload.get("sub")
+    if user_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token payload",
+        )
+        
     user = db.query(User).filter(User.id == int(user_id)).first()
     if user is None:
         raise HTTPException(
