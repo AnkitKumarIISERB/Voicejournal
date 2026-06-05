@@ -114,7 +114,7 @@ def process_journal(self, entry_id: int):
                         {"role": "system", "content": "You are a sentiment analyzer. Reply with a JSON object containing two keys: 'emotion' (one of: happy, sad, fearful, angry, neutral) and 'valence' (a float from -1.0 to 1.0)."},
                         {"role": "user", "content": transcript}
                     ],
-                    model="llama3-8b-8192",
+                    model="llama-3.1-8b-instant",
                     response_format={"type": "json_object"}
                 )
                 res_dict = json.loads(response.choices[0].message.content)
