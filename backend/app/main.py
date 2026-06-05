@@ -13,6 +13,8 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
+import asyncio
+from datetime import datetime, timedelta, timezone
 
 from app.core.config import settings
 from app.core.middleware import RequestLoggingMiddleware
@@ -76,3 +78,33 @@ def root():
         "docs": "/docs",
         "health": "/health",
     }
+
+async def demo_cleanup_loop():
+    """Background task to wipe demo account data older than 24 hours."""
+    from app.models.user import User
+    from app.models.journal import JournalEntry
+    from app.db.session import SessionLocal
+    
+    while True:
+        try:
+            db = SessionLocal()
+            demo_user = db.query(User).filter(User.email == "demo@voicejournal.ai").first()
+            if demo_user:
+                cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
+                deleted = db.query(JournalEntry).filter(
+                    JournalEntry.user_id == demo_user.id,
+                    JournalEntry.created_at < cutoff
+                ).delete()
+                db.commit()
+                if deleted > 0:
+                    print(f"[Cleanup] Wiped {deleted} old entries from demo account.")
+            db.close()
+        except Exception as e:
+            print(f"[Cleanup] Error: {e}")
+        
+        await asyncio.sleep(3600)  # Run every hour
+
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(demo_cleanup_loop())
+
