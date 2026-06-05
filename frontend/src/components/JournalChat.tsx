@@ -18,7 +18,7 @@ export default function JournalChat() {
   const [isListening, setIsListening] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const htmlAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const getAvatarForVoice = (voiceId: string) => {
     switch(voiceId) {
@@ -99,6 +99,12 @@ export default function JournalChat() {
     setInput('');
     setIsLoading(true);
 
+    // Safari Autoplay Unlock Hack: Play the empty audio element synchronously during the click event
+    if (voiceEnabled && htmlAudioRef.current) {
+      htmlAudioRef.current.volume = 0;
+      htmlAudioRef.current.play().catch(() => {});
+    }
+
     try {
       // Pass previous messages for memory context
       const res = await apiClient.post('/journals/chat', { 
@@ -117,14 +123,18 @@ export default function JournalChat() {
           const ttsRes = await apiClient.post('/journals/chat/tts', { text: ttsText, voice_id: selectedVoice }, { responseType: 'blob' });
           const url = URL.createObjectURL(ttsRes.data);
           
-          if (audioRef.current) {
-            audioRef.current.pause();
+          if (htmlAudioRef.current) {
+            htmlAudioRef.current.src = url;
+            htmlAudioRef.current.volume = 1;
+            htmlAudioRef.current.onended = () => setIsSpeaking(false);
+            const playPromise = htmlAudioRef.current.play();
+            if (playPromise !== undefined) {
+              playPromise.catch(err => {
+                console.error("Safari autoplay blocked:", err);
+                setIsSpeaking(false);
+              });
+            }
           }
-          
-          const audio = new Audio(url);
-          audioRef.current = audio;
-          audio.onended = () => setIsSpeaking(false);
-          audio.play();
         } catch (err) {
           console.error("TTS failed:", err);
           setIsSpeaking(false);
@@ -139,8 +149,8 @@ export default function JournalChat() {
   };
 
   const toggleVoice = () => {
-    if (voiceEnabled && audioRef.current) {
-      audioRef.current.pause();
+    if (voiceEnabled && htmlAudioRef.current) {
+      htmlAudioRef.current.pause();
       setIsSpeaking(false);
     }
     setVoiceEnabled(!voiceEnabled);
@@ -168,6 +178,7 @@ export default function JournalChat() {
 
   return (
     <div className="fixed bottom-6 right-6 w-96 h-[500px] bg-surface/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-black/50 flex flex-col z-50 fade-in-up overflow-hidden">
+      <audio ref={htmlAudioRef} className="hidden" />
       {/* Header */}
       <div className="p-4 border-b border-white/10 flex items-center justify-between bg-gradient-to-r from-primary/10 to-secondary/10">
         <div className="flex items-center gap-3">

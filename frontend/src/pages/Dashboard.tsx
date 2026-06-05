@@ -13,6 +13,7 @@ import JournalChat from '../components/JournalChat';
 import CrisisAlert from '../components/CrisisAlert';
 import StreakBadge from '../components/StreakBadge';
 import VoiceBiomarkers from '../components/VoiceBiomarkers';
+import { motion } from 'framer-motion';
 
 interface JournalEntry {
   id: number;
@@ -189,13 +190,15 @@ export default function Dashboard() {
   const emotionStyle = getEmotionStyle(commonEmotion);
 
   return (
-    <div className="min-h-screen bg-background text-textMain pb-12 relative overflow-hidden noise-overlay">
-      {/* Animated background orbs */}
-      <div className="orb orb-1" style={{ top: '-10%', right: '-5%' }}></div>
-      <div className="orb orb-2" style={{ bottom: '20%', left: '-10%' }}></div>
-
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-screen text-textMain pb-12 relative"
+    >
       {/* Navbar */}
-      <nav className="border-b border-white/[0.05] bg-background/60 backdrop-blur-xl sticky top-0 z-50">
+      <nav className="border-b border-white/[0.05] bg-surface/30 backdrop-blur-2xl sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
@@ -249,7 +252,10 @@ export default function Dashboard() {
           
           {/* Stats column */}
           <div className="space-y-4">
-            <div className="stat-card">
+            <motion.div 
+              whileHover={{ scale: 1.02, y: -2 }}
+              className="stat-card"
+            >
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
                   <TrendingUp size={16} className="text-primary" />
@@ -260,9 +266,12 @@ export default function Dashboard() {
                 {averageValence > 0 ? '+' : ''}{averageValence.toFixed(2)}
               </div>
               <div className="text-xs text-textMuted">Average Valence Score</div>
-            </div>
+            </motion.div>
 
-            <div className="stat-card">
+            <motion.div 
+              whileHover={{ scale: 1.02, y: -2 }}
+              className="stat-card"
+            >
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center">
                   <Heart size={16} className="text-secondary" />
@@ -271,9 +280,12 @@ export default function Dashboard() {
               </div>
               <div className="text-3xl mb-1">{emotionStyle.emoji}</div>
               <div className="text-lg font-medium text-white capitalize">{commonEmotion}</div>
-            </div>
+            </motion.div>
 
-            <div className="stat-card">
+            <motion.div 
+              whileHover={{ scale: 1.02, y: -2 }}
+              className="stat-card"
+            >
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
                   <Zap size={16} className="text-accent" />
@@ -282,7 +294,7 @@ export default function Dashboard() {
               </div>
               <div className="text-4xl font-light text-white">{entries.length}</div>
               <div className="text-xs text-textMuted">Total journal entries</div>
-            </div>
+            </motion.div>
 
             <MoodPrediction />
 
@@ -319,10 +331,13 @@ export default function Dashboard() {
               {entries.map((entry, index) => {
                 const style = getEmotionStyle(entry.emotion_label);
                 return (
-                  <div
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    whileHover={{ scale: 1.02 }}
                     key={entry.id}
                     className={`emotion-card glass-panel p-5 rounded-2xl border border-white/[0.06] group ${style.glow} shadow-lg`}
-                    style={{ animationDelay: `${index * 0.05}s` }}
                   >
                     {/* Emotion gradient overlay */}
                     <div className={`absolute inset-0 bg-gradient-to-br ${style.gradient} rounded-2xl opacity-50`}></div>
@@ -387,12 +402,12 @@ export default function Dashboard() {
                       {/* Audio Player Expansion */}
                       {expandedAudioId === entry.id && (
                         <div className="mt-4 pt-4 border-t border-white/10">
-                          <AudioPlayer audioUrl={`http://localhost:8000/api/v1/journals/${entry.id}/audio`} />
+                          <AudioPlayer entryId={entry.id} />
                           <VoiceBiomarkers entryId={entry.id} />
                         </div>
                       )}
                     </div>
-                  </div>
+                  </motion.div>
                 );
               })}
             </div>
@@ -402,6 +417,6 @@ export default function Dashboard() {
 
       {/* Floating Chat Widget */}
       <JournalChat />
-    </div>
+    </motion.div>
   );
 }

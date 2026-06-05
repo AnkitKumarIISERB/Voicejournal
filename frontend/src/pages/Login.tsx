@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { apiClient } from '../api/client';
 import { Mic, ArrowRight, Shield, Brain, BarChart3 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function Login() {
   const [isLogin, setIsLogin] = useState(true);
@@ -42,19 +43,14 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden noise-overlay">
-      {/* Animated floating orbs */}
-      <div className="orb orb-1" style={{ top: '10%', left: '15%' }}></div>
-      <div className="orb orb-2" style={{ bottom: '15%', right: '10%' }}></div>
-      <div className="orb orb-3" style={{ top: '60%', left: '60%' }}></div>
-
-      {/* Grid pattern overlay */}
-      <div className="absolute inset-0 opacity-[0.02]" style={{
-        backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
-        backgroundSize: '60px 60px'
-      }}></div>
-
-      <div className="relative z-10 w-full max-w-5xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+    <motion.div 
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 1.02 }}
+      transition={{ duration: 0.5, ease: "easeInOut" }}
+      className="min-h-screen flex items-center justify-center relative w-full px-4"
+    >
+      <div className="relative z-10 w-full max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         
         {/* Left side - Hero */}
         <div className="hidden lg:block fade-in-up">
@@ -192,6 +188,6 @@ export default function Login() {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
