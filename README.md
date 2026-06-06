@@ -37,9 +37,9 @@
 
 ## 🎥 Video Walkthrough
 
-> **[Loom Video Link Here - Replace me!]** 
-> 
-> Watch a full 2-minute demo of the application capturing live audio, generating the 60/40 multimodal fusion analysis, and talking back using the Neural Voice agent.
+**[▶ Watch the 4-minute demo on ScreenPal](https://go.screenpal.com/watch/cO11XhnuDSp)**
+
+Covers: live audio recording → 60/40 multimodal fusion → real-time WebSocket dashboard update → Hinglish TTS trick → full WavLM pipeline via Docker.
 
 ---
 
@@ -63,7 +63,7 @@ Unlike simple wrapper apps, this project implements a **60/40 Multimodal Fusion 
    - Llama-3 performs deep semantic context analysis (detecting sarcasm, passive-aggressiveness, or explicit statements).
 3. **Fusion & Clinical Anomaly Detection:**
    - The two scores are fused into a final Continuous Valence Score (-1.0 to +1.0).
-   - A background chron-job scans for **Crisis Anomalies** (e.g., a sudden valence drop of >0.5, or 3+ sustained negative days) and triggers ethical crisis helpline alerts.
+   - A background cron job scans for **Crisis Anomalies** (e.g., a sudden valence drop of >0.5, or 3+ sustained negative days) and triggers ethical crisis helpline alerts.
 
 > [!NOTE]
 > **Live Demo Fallback:** While the local Docker architecture utilizes the full 60/40 WavLM fusion, the live Render deployment gracefully bypasses the heavy PyTorch WavLM extraction to accommodate the 512MB free-tier RAM limit, seamlessly falling back to 100% LLM semantic inference.
@@ -161,7 +161,8 @@ No architecture is perfect. If I were scaling this to 100,000 users, I would add
 
 ## 📡 Core API & Metrics Endpoints
 
-The FastAPI backend is fully deployed to **Render**. View the live interactive OpenAPI/Swagger documentation at `https://voicejournal-k36q.onrender.com/docs`.
+The FastAPI backend is deployed at `https://voicejournal-k36q.onrender.com`. 
+View the interactive Swagger docs at [`/docs`](https://voicejournal-k36q.onrender.com/docs).
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
@@ -205,13 +206,22 @@ cd Voicejournal
 ```
 
 ### 2. Environment Variables
+
 ```bash
 cp backend/.env.example backend/.env
+```
 
-# Connect frontend to Live Production Backend:
+Open `backend/.env` and add your `GROQ_API_KEY` to enable AI features.
+
+For the frontend, create `frontend/.env`:
+
+```bash
+# To run fully locally (recommended — includes full WavLM pipeline):
+echo "VITE_API_URL=http://localhost:8000/api/v1" > frontend/.env
+
+# OR to use the live Render backend (Whisper + Llama-3 only, WavLM bypassed):
 echo "VITE_API_URL=https://voicejournal-k36q.onrender.com/api/v1" > frontend/.env
 ```
-*(Add your `GROQ_API_KEY` to the backend `.env` file to enable AI features!)*
 
 ### 3. Run with Docker Compose (Recommended)
 Spin up the entire full-stack application (Postgres, Redis, FastAPI Backend, Celery Worker, and Vite Frontend) locally:
