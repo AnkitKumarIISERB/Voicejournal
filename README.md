@@ -146,7 +146,7 @@ graph TD
 
 No architecture is perfect. If I were scaling this to 100,000 users, I would address the following:
 1. **Render Cold Starts**: The backend is hosted on Render's free tier. If the API hasn't been hit in 15 minutes, the first audio upload takes ~50 seconds to process while the container spins up. 
-2. **Free-Tier RAM Constraints**: PyTorch WavLM models require ~2GB of RAM. Because Render's free tier provides 512MB, the WavLM acoustic analysis is dynamically bypassed in the live deployment (`RENDER_FREE_TIER=true`) to prevent Out-Of-Memory (OOM) crashes. It runs beautifully on local Docker!
+2. **Free-Tier RAM Constraints**: PyTorch WavLM models require ~2GB of RAM. Because Render's free tier provides 512MB, the WavLM acoustic analysis is dynamically bypassed in the live deployment (`RENDER_FREE_TIER=true`) to prevent OOM crashes. The complete 5-stage pipeline including WavLM runs when self-hosted via Docker Compose — see the local setup instructions below.
 3. **WebSocket Scaling**: The current WebSocket manager stores active connections in-memory on the FastAPI server. If deployed across a multi-node Kubernetes cluster, this would fail. We would need a Redis Pub/Sub backplane to route WebSocket messages across horizontal pods.
 
 ---
