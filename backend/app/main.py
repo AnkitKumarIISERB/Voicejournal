@@ -84,12 +84,16 @@ async def demo_cleanup_loop():
     from app.models.user import User
     from app.models.journal import JournalEntry
     from app.db.session import SessionLocal
+    from app.core.security import get_password_hash
     
     while True:
         try:
             db = SessionLocal()
             demo_user = db.query(User).filter(User.email == "demo@voicejournal.ai").first()
             if demo_user:
+                # Force reset demo password to ensure it matches README
+                demo_user.hashed_password = get_password_hash("Demo@VJ2024!")
+                
                 cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
                 deleted = db.query(JournalEntry).filter(
                     JournalEntry.user_id == demo_user.id,

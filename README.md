@@ -20,7 +20,7 @@
   <table>
     <tr>
       <td><strong>Recruiter Demo Account</strong></td>
-      <td><code>Email: demo@voicejournal.ai</code><br/><code>Password: password123</code></td>
+      <td><code>Email: demo@voicejournal.ai</code><br/><code>Password: Demo@VJ2024!</code></td>
     </tr>
   </table>
 </div>
