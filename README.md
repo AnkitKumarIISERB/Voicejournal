@@ -37,7 +37,7 @@
 
 ## 🎥 Video Walkthrough
 
-**[▶ Watch the 4-minute demo on ScreenPal](https://go.screenpal.com/watch/cO11XhnuDSp)**
+**[▶ Watch the 4-minute demo on Loom](https://www.loom.com/share/29a8ceb0e2dd4d33b38ffdfdd34e5b39)**
 
 Covers: live audio recording → 60/40 multimodal fusion → real-time WebSocket dashboard update → Hinglish TTS trick → full WavLM pipeline via Docker.
 
