@@ -2,7 +2,7 @@
   <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/mic.svg" width="80" height="80" alt="Voice Journal Logo"/>
   <h1>Voice Journal AI</h1>
   <p><strong>A beautifully crafted, multimodal AI voice journaling platform that analyzes your acoustic emotions, tracks mental well-being, and talks back to you.</strong><br/>
-  <em>🚀 Key Metrics: Blazing fast <800ms LLM inference latency via Groq • 60/40 Multimodal Fusion • Automated test suite via pytest</em></p>
+  <em><800ms LLM inference via Groq API • 60/40 acoustic-semantic fusion • WavLM fine-tuned on RAVDESS • AES-256 encrypted at rest • pytest + GitHub Actions CI</em></p>
   
   <p>
     <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" />
